@@ -68,7 +68,8 @@ def remove_image(image_id):
         pass
 
 
-def main(images):
+def main(args):
+    images = args[0]
     for image in images.split(','):
         clean_old_tags(image)
     clean_dangling_containers()
