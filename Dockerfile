@@ -1,7 +1,3 @@
-FROM debian:latest
+FROM python:2.7-onbuild
 
-RUN apt-get update; apt-get -y install python-pip
-
-COPY . /app
-
-WORKDIR /app
+CMD ["python", "cleaner.py"]
