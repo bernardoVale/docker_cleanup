@@ -1,9 +1,11 @@
 import docker
+import os
 from docker.errors import APIError, ImageNotFound
+import time
 
 # Don't judge me, I don't have time to do a better code right now
 cli = docker.DockerClient(base_url='unix://var/run/docker.sock', version='auto')
-
+CONFIG = {}
 
 def drop_container(container):
     print("Removing container:{} with ID:{}".format(container.name, container.id[0:10]))
@@ -67,10 +69,24 @@ def remove_image(image_id):
         # I don't care
         pass
 
+def configure():
+    CONFIG['WAKEUP_TIME'] = os.getenv('WAKEUP_TIME', 30)
+    CONFIG['DELETE_IMAGES'] = os.getenv('DELETE_IMAGES', None)
+    CONFIG['KEEP_AMOUNT'] = os.getenv('KEEP_AMOUNT', 5)
 
-def main(args):
-    images = args[0]
-    for image in images.split(','):
-        clean_old_tags(image)
-    clean_dangling_containers()
-    clean_dangling_images()
+def main():
+    configure()
+    while True:
+        print("Executing Docker Cleaner...\n")
+        images = CONFIG['DELETE_IMAGES']
+        if images:
+            for image in images.split(','):
+                clean_old_tags(image, keep=CONFIG['KEEP_AMOUNT'])
+
+        clean_dangling_containers()
+        clean_dangling_images()
+        time.sleep(float(CONFIG['WAKEUP_TIME']))
+
+
+if __name__ == '__main__':
+    main()
