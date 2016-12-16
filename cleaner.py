@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 import docker
 import os
 from docker.errors import APIError, ImageNotFound
@@ -85,7 +86,7 @@ def main():
 
         clean_dangling_containers()
         clean_dangling_images()
-        time.sleep(float(CONFIG['WAKEUP_TIME']))
+        time.sleep(float(CONFIG['WAKEUP_TIME'])*60)
 
 
 if __name__ == '__main__':
