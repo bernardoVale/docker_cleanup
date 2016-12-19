@@ -1,14 +1,17 @@
 #!/usr/bin/env python
-import docker
 import os
-from docker.errors import APIError, ImageNotFound
 import time
+import docker
+from docker.errors import APIError, ImageNotFound
 
 # Don't judge me, I don't have time to do a better code right now
 cli = docker.DockerClient(base_url='unix://var/run/docker.sock', version='auto')
 CONFIG = {}
 
 def drop_container(container):
+    """
+    Drop containers with exit status
+    """
     print("Removing container:{} with ID:{}".format(container.name, container.id[0:10]))
     try:
         return container.remove(force=True)
@@ -57,13 +60,20 @@ def clean_old_tags(image_name, keep=5):
     :return:
     """
     print("Cleaning tags for image {}".format(image_name))
-    images = order_images_by_date(cli.images.list(name=image_name))[keep::]
+    images = order_images_by_date(cli.images.list(name=image_name))
+    if len(images) > keep:
+        images = images[keep::]
+
     for image in images:
         print("Removing {} with image tag:{} and ID:{}".format(image_name, image.tags[0], image.id[7:19]))
         remove_image(image.id)
 
 
 def remove_image(image_id):
+    """
+    Remove the docker image from Docker host
+    :param image_id: ID of the image
+    """
     try:
         cli.images.remove(image=image_id)
     except ImageNotFound:
@@ -71,11 +81,19 @@ def remove_image(image_id):
         pass
 
 def configure():
+    """"
+    Configure the Docker Cleaner with the Environment
+    variables
+    """
     CONFIG['WAKEUP_TIME'] = os.getenv('WAKEUP_TIME', 30)
     CONFIG['DELETE_IMAGES'] = os.getenv('DELETE_IMAGES', None)
     CONFIG['KEEP_AMOUNT'] = os.getenv('KEEP_AMOUNT', 5)
 
+
 def main():
+    """
+    Entrypoint for the execution
+    """
     configure()
     while True:
         print("Executing Docker Cleaner...\n")
