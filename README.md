@@ -38,5 +38,5 @@ Full custom example
 -e WAKEUP_TIME=60 \
 -e KEEP_AMOUNT=10 \
 -e DELETE_IMAGES=nginx,mysql \
-bernardovale/docker_cleaner
+bernardovale/docker_cleanup
 ```
