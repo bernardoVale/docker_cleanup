@@ -6,7 +6,7 @@ This container will serve as a housekeeper for your Docker host. Map your `docke
 ````
 docker run -d --name maid \
 -v /var/run/docker.sock:/var/run/docker.sock \
-bernardovale/docker_cleaner
+bernardovale/docker_cleanup
 ````
 
 
