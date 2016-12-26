@@ -12,12 +12,12 @@ def drop_container(container):
     """
     Drop containers with exit status
     """
-    print("Removing container:{} with ID:{}".format(container.name, container.id[0:10]))
+    print "Removing container:{} with ID:{}".format(container.name, container.id[0:10])
     try:
         return container.remove(force=True)
     except APIError, e:
-        print("Could not remove container:{}".format(container))
-        print(e.message)
+        print "Could not remove container:{}".format(container)
+        print e.message
 
 
 def clean_dangling_containers():
@@ -25,7 +25,7 @@ def clean_dangling_containers():
     Cleaning all containers with status exited
     :return:
     """
-    print("Cleaning dangling containers...")
+    print "Cleaning dangling containers..."
     containers = cli.containers.list(filters={'status': 'exited'})
     for container in containers:
         drop_container(container)
@@ -36,10 +36,10 @@ def clean_dangling_images():
     Clean all images that are not used
     :return:
     """
-    print("Cleaning dangling images...")
+    print "Cleaning dangling images..."
     images = cli.images.list(filters={'dangling': 'true'})
     for image in images:
-        print("Removing image:{}".format(image.id[7:19]))
+        print "Removing image:{}".format(image.id[7:19])
         cli.images.remove(image=image.id, force=True)
 
 
@@ -59,14 +59,14 @@ def clean_old_tags(image_name, keep=5):
     :param keep: Amount to keep
     :return:
     """
-    print("Cleaning tags for image {}".format(image_name))
+    print "Cleaning tags for image {}".format(image_name)
     images = order_images_by_date(cli.images.list(name=image_name))
     if len(images) > keep:
         images = images[keep::]
 
-    for image in images:
-        print("Removing {} with image tag:{} and ID:{}".format(image_name, image.tags[0], image.id[7:19]))
-        remove_image(image.id)
+        for image in images:
+            print "Removing {} with image tag:{} and ID:{}".format(image_name, image.tags[0], image.id[7:19])
+            remove_image(image.id)
 
 
 def remove_image(image_id):
@@ -96,7 +96,7 @@ def main():
     """
     configure()
     while True:
-        print("Executing Docker Cleaner...\n")
+        print "Executing Docker Cleaner...\n"
         images = CONFIG['DELETE_IMAGES']
         if images:
             for image in images.split(','):
